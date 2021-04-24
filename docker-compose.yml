@@ -1,0 +1,115 @@
+# version: '3'
+# # List of different services should be made available when
+# # this docker compose file is used as a starting point of
+# # this application
+# services:
+#   postgres:
+#     image: 'postgres:latest'
+#     environment:
+#       - POSTGRES_PASSWORD=postgres_password
+#   redis:
+#     image: 'redis:latest'
+#   # server:
+#   api:
+#     build:
+#       dockerfile: Dockerfile.dev
+#       context: ./server
+#     volumes:
+#       - /app/node_modules
+#       - ./server:/app
+#     depends_on:
+#       - postgres
+#       - redis
+#     environment:
+#       - REDIS_HOST=redis
+#       - REDIS_PORT=6379
+#       - PGUSER=postgres
+#       - PGHOST=postgres
+#       - PGDATABASE=postgres
+#       - PGPASSWORD=postgres_password
+#       - PGPORT=5432
+#   client:
+#     stdin_open: true
+#     build:
+#       dockerfile: Dockerfile.dev
+#       context: ./client
+#     volumes:
+#       - /app/node_modules
+#       - ./client:/app
+#     depends_on:
+#       - api
+#   worker:
+#     build:
+#       dockerfile: Dockerfile.dev
+#       context: ./worker
+#     depends_on:
+#       - redis
+#     volumes:
+#       - /app/node_modules
+#       - ./worker:/app
+#     environment:
+#       - REDIS_HOST=redis
+#       - REDIS_PORT=6379
+#   nginx:
+#     restart: always
+#     build:
+#       dockerfile: Dockerfile.dev
+#       context: ./nginx
+#     ports:
+#       - '3050:80'
+#     depends_on:
+#       - api
+#       - client
+
+version: '3'
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+  redis:
+    image: 'redis:latest'
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # - NODE_OPTIONS=--unhandled-rejections=warn => if promise rejecting handling is not placed inside index.js in server, only use this for development not in the prod
