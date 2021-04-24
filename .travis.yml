@@ -9,10 +9,10 @@ script:
   - docker run -e CI=true rodvind/react-test npm test
 
 after_success:
-  - dokcer build -t rodvind/fibona-client ./client
+  - docker build -t rodvind/fibona-client ./client
   - docker build -t rodvind/fibona-nginx ./nginx
   - docker build -t rodvind/fibona-server ./server
-  - dokcer build -t rodvind/fibona-worker ./worker
+  - docker build -t rodvind/fibona-worker ./worker
 
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
