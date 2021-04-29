@@ -13,7 +13,7 @@
       "image": "rodvind/fibona-server",
       "hostname": "api",
       "essential": false,
-      "memory": 256
+      "memory": 128
     },
     {
       "name": "worker",
