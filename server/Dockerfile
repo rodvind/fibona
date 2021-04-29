@@ -1,4 +1,4 @@
-FROm node:alpine
+FROm node:14.14.0-alpine
 WORKDIR '/app'
 COPY package.json .
 RUN npm install
